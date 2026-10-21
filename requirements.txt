@@ -1,0 +1,14 @@
+pymupdf
+pdf2docx
+python-docx
+python-pptx
+pillow
+pillow-heif
+pandas
+openpyxl
+xlrd
+odfpy
+pytesseract
+sv-ttk
+tkinterdnd2
+pytest

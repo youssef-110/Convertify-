@@ -1,0 +1,4 @@
+LIBRARY ConvertifyMenu
+EXPORTS
+    DllGetClassObject PRIVATE
+    DllCanUnloadNow PRIVATE
