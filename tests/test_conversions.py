@@ -175,3 +175,12 @@ def test_trim_bad_time(samples, tmp_path):
         pytest.skip("needs FFmpeg")
     with pytest.raises(ConversionError, match="isn't a time"):
         converters.run("mp3", [samples / "sample.mp4"], tmp_path, {"start": "abc", "_timeout": 60})
+
+
+def test_sheet_names_cannot_escape_output_folder(tmp_path):
+    src = tmp_path / "evil.json"
+    src.write_text('{"../../escaped": [{"a": 1}], "ok": [{"a": 2}]}', encoding="utf-8")
+    (tmp_path / "out").mkdir()
+    outs = converters.run("csv", [src], tmp_path / "out", {})
+    assert all(o.parent == tmp_path / "out" for o in outs)
+    assert not list(tmp_path.parent.glob("*escaped*"))

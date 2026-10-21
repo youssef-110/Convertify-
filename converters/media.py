@@ -18,7 +18,8 @@ H264 = ["-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv
 
 def _start(src, opts):
     """ffmpeg + input, cut to the optional start/end times (seconds or mm:ss)."""
-    args = [require("ffmpeg"), "-hide_banner", "-loglevel", "error", "-y"]
+    # local files only: a playlist disguised as a video can't make FFmpeg fetch URLs
+    args = [require("ffmpeg"), "-hide_banner", "-loglevel", "error", "-y", "-protocol_whitelist", "file"]
     for key, flag in (("start", "-ss"), ("end", "-to")):
         if opts.get(key):
             args += [flag, _time(opts[key])]

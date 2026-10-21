@@ -1,6 +1,7 @@
 """Spreadsheets with pandas + openpyxl (xlrd for .xls, odfpy for .ods)."""
 import html
 import json
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -24,12 +25,17 @@ def _read(src):
         raise ConversionError(f"This spreadsheet could not be read: {e}")
 
 
+def _safe(name):
+    """Sheet names come from the file (JSON keys can be anything), so keep them out of paths."""
+    return re.sub(r'[\\/:*?"<>|\x00-\x1f]', "_", str(name)).strip(" .") or "Sheet"
+
+
 def convert(src, out_dir, fmt, opts):
     sheets, stem = _read(src), Path(src).stem
     if fmt in ("csv", "tsv"):
         outs = []
         for name, df in sheets.items():  # one file per sheet
-            out = Path(out_dir) / (f"{stem}.{fmt}" if len(sheets) == 1 else f"{stem}_{name}.{fmt}")
+            out = Path(out_dir) / (f"{stem}.{fmt}" if len(sheets) == 1 else f"{stem}_{_safe(name)}.{fmt}")
             # BOM so Excel shows accents correctly
             df.to_csv(out, index=False, encoding="utf-8-sig", sep="	" if fmt == "tsv" else ",")
             outs.append(out)

@@ -21,7 +21,8 @@ def convert(src, out_dir, fmt, opts):
         docx = convert(src, tmp, "docx", opts)[0]
         return libreoffice.convert(docx, out_dir, "pdf", opts)
     out = Path(out_dir) / f"{src.stem}.{fmt}"
-    args = [require("pandoc"), "-f", READERS[ext], "-t", WRITERS[fmt], "-o", out, src]
+    # --sandbox: a document can't pull other local files or URLs into the output
+    args = [require("pandoc"), "--sandbox", "-f", READERS[ext], "-t", WRITERS[fmt], "-o", out, src]
     if fmt in ("html", "epub"):
         args[1:1] = ["-s", "--metadata", f"title={src.stem}"]
     run(args, opts["_timeout"])
